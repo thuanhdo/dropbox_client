@@ -2,8 +2,11 @@ package com.example.andjm.dropbox_client;
 
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.support.design.widget.BottomSheetDialogFragment;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
@@ -11,6 +14,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -41,7 +45,8 @@ public class MainActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(MainActivity.this, "FAB clicked!!", Toast.LENGTH_LONG).show();
+                BottomSheetDialogFragment floatingButtonFragment = new FloatingButtonFragment();
+                floatingButtonFragment.show(getSupportFragmentManager(), floatingButtonFragment.getTag());
             }
         });
 
@@ -52,6 +57,10 @@ public class MainActivity extends AppCompatActivity {
         actionbar.setDisplayHomeAsUpEnabled(true);
         actionbar.setHomeAsUpIndicator(R.drawable.ic_menu_black_25dp);
 
+        //set home fragment as default
+        FragmentManager fm = getSupportFragmentManager();
+        fm.beginTransaction().replace(R.id.content_fragment, new HomeFragment()).commit();
+
         mDrawerLayout = findViewById(R.id.drawer_layout);
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(
@@ -59,24 +68,25 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public boolean onNavigationItemSelected(MenuItem menuItem) {
                         // set item as selected to persist highlight
+                        Fragment fragment = new Fragment();
                         menuItem.setChecked(true);
                         switch (menuItem.getItemId()) {
                             case R.id.nav_home:
-
-                                Toast.makeText(MainActivity.this, "Home selected", Toast.LENGTH_LONG).show();
+                                fragment = new HomeFragment();
                                 break;
                             case R.id.nav_files:
-                                Toast.makeText(MainActivity.this, "Files selected", Toast.LENGTH_LONG).show();
+                                fragment = new FilesFragment();
                                 break;
                             case R.id.nav_notifications:
-                                Toast.makeText(MainActivity.this, "Notifications selected", Toast.LENGTH_LONG).show();
+                                Toast.makeText(MainActivity.this, "Notifications selected", Toast.LENGTH_SHORT).show();
                                 break;
                         }
-                        // close drawer when item is tapped
+
+                        FragmentManager fm = getSupportFragmentManager();
+                        fm.beginTransaction().replace(R.id.content_fragment, fragment).commit();
                         mDrawerLayout.closeDrawers();
 
-                        // Add code here to update the UI based on the item selected
-                        // For example, swap UI fragments here
+
 
                         return true;
                     }
